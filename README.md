@@ -2,7 +2,7 @@
 
 > 🌐 语言切换：**中文（当前）** | [English](./README.en.md)
 
-这是一个面向实战的 OpenClaw + Antigravity Tools 技能仓库，目标是让多 Bot 场景下的配置、运维与排障可复制、可验证、可持续迭代。
+这个 skill 用于 OpenClaw + Antigravity Tools 的配置、运维和排障：新增/更新 Telegram Bot，绑定 agent 与默认模型，维护 /model 可选模型，配置反向代理，管理并验证 Cron 定时任务，处理 403/429、不回复、错模型、warmup 混淆、投递失败等常见问题。
 
 ## 这个 Skill 用来做什么
 
