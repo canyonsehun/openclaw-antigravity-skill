@@ -1,66 +1,66 @@
 # openclaw-antigravity-skill
 
-A practical skill repository for operating OpenClaw with Antigravity reverse-proxy models in real production usage.
+> 🌐 语言切换：**中文（当前）** | [English](./README.en.md)
 
-This repo keeps one thing stable: **repeatable setup + repeatable troubleshooting** for multi-bot OpenClaw environments.
+这是一个面向实战的 OpenClaw + Antigravity Tools 技能仓库，目标是让多 Bot 场景下的配置、运维与排障可复制、可验证、可持续迭代。
 
-## What This Skill Is For
+## 这个 Skill 用来做什么
 
-- Configure and operate OpenClaw agents/channels safely.
-- Onboard/update Telegram bots and bind them to the right agent/model.
-- Maintain Antigravity model catalogs and `/model` selector behavior.
-- Run reliable cron workflows (collection, aggregation, delivery).
-- Troubleshoot real issues fast (wrong model, no reply, 403/429, warmup confusion, delivery failures).
+- 稳定配置与运维 OpenClaw 的 agents/channels。
+- 新增或更新 Telegram Bot，并绑定正确的 agent / model。
+- 维护 Antigravity 模型目录与 `/model` 可选项行为。
+- 运行可靠的 cron 工作流（采集、汇总、投递）。
+- 快速排障：模型错路由、不回复、403/429、warmup 混淆、投递失败等。
 
-## Repository Layout
+## 仓库结构
 
-- `SKILL.md`: Main operating playbook.
-- `references/official.md`: Official OpenClaw behavior and command references.
-- `references/antigravity-tools.md`: Antigravity Tools operation notes and troubleshooting.
-- `references/antigravity-models.md`: Model list/sync patterns for antigravity provider.
-- `references/bot-onboarding.md`: Bot onboarding reference notes.
-- `scripts/provision_telegram_bot.py`: One-shot bot provisioning helper.
-- `scripts/sync_antigravity_models.py`: Sync antigravity model catalogs across config files.
+- `SKILL.md`：主流程与操作规范。
+- `references/official.md`：OpenClaw 官方行为与命令参考。
+- `references/antigravity-tools.md`：Antigravity Tools 实操与排障补充。
+- `references/antigravity-models.md`：Antigravity 模型与同步规则。
+- `references/bot-onboarding.md`：Bot 接入参考说明。
+- `scripts/provision_telegram_bot.py`：Bot 一键接入脚本。
+- `scripts/sync_antigravity_models.py`：模型目录同步脚本。
 
-## When New Content Gets Added
+## 什么时候补充新内容
 
-New content is added only when there is a **real operator-facing capability change**:
+仅在出现**可操作能力变化**时补充：
 
-1. OpenClaw introduces a new usable feature, command, workflow, or config path.
-2. Antigravity Tools introduces a new usable feature affecting model/proxy/account operations.
-3. Existing steps become outdated due to version changes and need a new correct procedure.
+1. OpenClaw 新增可用能力（新命令、新配置路径、新工作流）。
+2. Antigravity Tools 新增可用能力（影响模型/反代/账号调度等操作方式）。
+3. 旧流程因版本变化失效，需要新的正确步骤。
 
-## When Content Is NOT Added
+## 什么时候不补充
 
-Do not update the skill for changes that are only:
+以下情况默认不补充到 skill：
 
-- bug fixes
-- performance/stability tuning
-- UI text or layout tweaks
-- pure security patch notes with no operator workflow change
+- 纯 bug 修复
+- 性能/稳定性优化
+- UI 微调、文案变更
+- 不影响实际操作流程的安全补丁说明
 
-## Update Policy (OpenClaw + Antigravity)
+## 更新策略（OpenClaw + Antigravity）
 
-When a new feature qualifies for inclusion:
+当满足补充条件时，必须写清楚：
 
-1. Record **what changed** and **why operators should care**.
-2. Add **how to use it** (commands + config path).
-3. Add **how to verify success** (logs/status/output).
-4. Place it in the correct section (`SKILL.md` and matching `references/*`).
-5. Write a changelog entry.
+1. 改了什么、为什么对操作有影响。
+2. 如何使用（命令 + 配置路径）。
+3. 如何验证成功（日志/状态/输出）。
+4. 应该写到哪里（`SKILL.md` 与对应 `references/*`）。
+5. 在 `CHANGELOG.md` 记录一次变更。
 
-## Security Rules
+## 安全规则
 
-- Never commit real tokens, API keys, chat IDs, or credentials.
-- Keep placeholders only (e.g. `<bot_token>`, `<api_key>`).
-- If examples include secrets, redact before commit.
+- 禁止提交真实 token / API key / chat id / 凭证。
+- 只保留占位符（如 `<bot_token>`、`<api_key>`）。
+- 示例里若出现敏感信息，提交前必须脱敏。
 
-## Changelog Rules
+## Changelog 规则
 
-Use `CHANGELOG.md` for operator-relevant changes only:
+`CHANGELOG.md` 只记录对操作者有价值的变更：
 
-- Added new capability usage
-- Changed operational process
-- Added/updated troubleshooting flow
+- 新增可操作能力
+- 现有流程调整
+- 排障流程新增或修正
 
-Skip entries for cosmetic-only edits.
+纯样式/文案修改可不记。
