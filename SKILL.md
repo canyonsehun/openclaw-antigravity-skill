@@ -208,6 +208,27 @@ Use this protocol when the user reports "it stopped", "you only explained", or "
    - two-phase handling ("execute" then "explain"), or
    - strict response contract requiring command evidence lines only.
 
+
+## 403 account verification re-test protocol
+
+Use this when user says they finished Google verification and asks to re-test one/all accounts.
+
+1. Re-test a specific account with direct warmup calls on active production models:
+   - gemini-3-flash
+   - gemini-3-pro-high
+   - gemini-3-pro-image (only when this model is enabled in the user setup)
+2. Pass criteria:
+   - all tested models return HTTP 200 for that account.
+3. Evidence you must provide:
+   - latest request_logs rows for that email (status/url/model/time)
+   - matching app.log Warmup-API SUCCESS lines with timestamps
+4. If still 403:
+   - return the latest validation_url for that specific account
+   - require user to verify in an incognito window with that exact Google account signed in
+   - keep account disabled/deprioritized until it passes re-test
+5. Security rule:
+   - never store or copy passwords, tokens, recovery emails, or 2FA secrets into skill files, repo files, or logs.
+
 ## Troubleshooting rules
 
 - Diagnose routing first when user says "wrong model".
