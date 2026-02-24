@@ -4,10 +4,19 @@ Use these sources when behavior needs official confirmation:
 
 - Getting started: https://docs.openclaw.ai/start/getting-started
 - Latest release: https://github.com/openclaw/openclaw/releases/latest
+- Release v2026.2.22: https://github.com/openclaw/openclaw/releases/tag/v2026.2.22
 - Release v2026.2.21: https://github.com/openclaw/openclaw/releases/tag/v2026.2.21
-- Release v2026.2.19: https://github.com/openclaw/openclaw/releases/tag/v2026.2.19
 
 ## Feature highlights (new features only)
+
+### v2026.2.22 (2026-02-23)
+
+- Provider/Mistral: 新增 Mistral 供应商支持，包括内存嵌入和语音支持。
+- Update/Core: 新增可选的内置自动更新功能（默认关闭）。
+- CLI/Update: 新增 `openclaw update --dry-run` 以预览更新操作而不实际执行。
+- Channels/Synology Chat: 新增原生 Synology Chat 频道插件支持。
+- Memory/FTS: 新增西班牙语、葡萄牙语、日语、韩语和阿拉伯语的停用词过滤和查询扩展，提升搜索召回率。
+- Gateway/Auth: 统一了凭据来源优先级处理，重构了 WebSocket 握手路径以支持显式的 `auth.deviceToken`。
 
 ### v2026.2.21 (2026-02-21)
 
