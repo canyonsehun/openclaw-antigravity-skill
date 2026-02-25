@@ -4,10 +4,19 @@ Use these sources when behavior needs official confirmation:
 
 - Getting started: https://docs.openclaw.ai/start/getting-started
 - Latest release: https://github.com/openclaw/openclaw/releases/latest
+- Release v2026.2.23: https://github.com/openclaw/openclaw/releases/tag/v2026.2.23
 - Release v2026.2.22: https://github.com/openclaw/openclaw/releases/tag/v2026.2.22
-- Release v2026.2.21: https://github.com/openclaw/openclaw/releases/tag/v2026.2.21
 
 ## Feature highlights (new features only)
+
+### v2026.2.23 (2026-02-24)
+
+- Providers/Kilo Code: 新增 `kilocode` 供应商一级支持，默认模型为 `kilocode/anthropic/claude-opus-4.6`。
+- Providers/Kimi: `web_search` 工具新增 `provider: "kimi"` (Moonshot) 支持，包含引用提取功能。
+- Media/Video: 新增 Moonshot 原生视频供应商支持，优化视频执行逻辑以遵循配置优先级。
+- Sessions/Cron: 增强会话维护，新增 `openclaw sessions cleanup` 命令及磁盘预算控制（`maxDiskBytes`）。
+- Agents/Config: 支持 per-agent `params` 覆盖模型默认设置（如 `cacheRetention`），允许独立调整缓存行为。
+- Security/Browser: **BREAKING**: 浏览器 SSRF 策略默认改为信任网络模式（`dangerouslyAllowPrivateNetwork=true`），旧配置项将由 `doctor --fix` 自动迁移。
 
 ### v2026.2.22 (2026-02-23)
 
