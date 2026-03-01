@@ -1,6 +1,6 @@
 ---
 name: openclaw
-description: Configure and operate OpenClaw with Telegram bots and antigravity reverse-proxy models (Antigravity Tools). Use when installing OpenClaw, setting up gateway/channels, creating or updating Telegram bot agents, configuring /model choices (especially antigravity), binding account-to-agent routing, validating antigravity scheduling/account behavior, and troubleshooting model/channel issues (including warmup, image models, 403/429).
+description: Configure and operate OpenClaw — a self-hosted, multi-channel AI agent gateway. Use when installing OpenClaw, managing Gateway operations, setting up channels (WhatsApp, Telegram, Discord, Slack, iMessage, Signal, and 15+ others), creating or updating Telegram bot agents, configuring model providers (including antigravity relay), multi-agent routing, security hardening, binding account-to-agent routing, validating antigravity scheduling/account behavior, and troubleshooting model/channel issues (including warmup, image models, 403/429).
 ---
 
 # OpenClaw
@@ -9,10 +9,17 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
 
 ## Read references only when needed
 
-- Read `references/official.md` when checking official OpenClaw setup/CLI behavior.
-- Read `references/bot-onboarding.md` when creating or modifying Telegram bots.
-- Read `references/antigravity-models.md` when changing antigravity relay models and `/model` visibility.
-- Read `references/antigravity-tools.md` when requests involve Antigravity Tools behavior (account rotation, scheduling mode, LAN exposure, auth, warmup, image model support, 403/429 analysis).
+| Reference | When to read |
+|---|---|
+| `references/official.md` | Checking official OpenClaw setup/CLI behavior or release notes |
+| `references/bot-onboarding.md` | Creating or modifying Telegram bots |
+| `references/antigravity-models.md` | Changing antigravity relay models and `/model` visibility |
+| `references/antigravity-tools.md` | Antigravity Tools behavior (account rotation, scheduling mode, LAN exposure, auth, warmup, image model support, 403/429 analysis) |
+| `references/channels.md` | Per-channel setup: WhatsApp, Telegram, Discord, Slack, Signal, iMessage, plugins |
+| `references/gateway_ops.md` | Gateway architecture, service management, remote access, install/update |
+| `references/multi_agent.md` | Multi-agent routing, bindings, per-agent config |
+| `references/providers.md` | Model provider setup (Anthropic, OpenAI, Ollama, 20+ providers) |
+| `references/security.md` | Auth, access control, hardening baseline, secrets, incident response |
 
 ## Workflow decision
 
@@ -231,6 +238,16 @@ Use this when user says they finished Google verification and asks to re-test on
 
 ## Troubleshooting rules
 
+- Telegram reaction (👀 ack) is a channel/runtime concern, not a memory-plugin concern.
+- Do not patch memory plugins (for example `memory-lancedb-pro`) to force Telegram reactions; plugin edits will be overwritten by upgrades and create maintenance risk.
+- When reaction feedback is requested, use config + runtime verification first:
+  1. Check `channels.telegram.reactionLevel` (`ack`/`minimal`/`extensive` as needed).
+  2. Check `channels.telegram.ackReaction` (for example `👀`).
+  3. Keep `messages.ackReactionScope` aligned with desired scope (`all` when user wants broad coverage).
+  4. Restart gateway and verify hot-reload/restart logs.
+  5. Validate Telegram API capability directly (`setMessageReaction`) before blaming OpenClaw logic.
+  6. Test on a fresh incoming message (avoid judging by old history items).
+- If manual Telegram API reaction succeeds but OpenClaw ack is inconsistent, classify as OpenClaw channel path issue (not LanceDB), collect logs, and prefer OpenClaw config/version fix over plugin code hacks.
 - Diagnose routing first when user says "wrong model".
 - Inspect `bindings` before changing model provider config.
 - Inspect session overrides in `~/.openclaw/agents/<agent_id>/sessions/sessions.json` when `/status` disagrees with defaults.
