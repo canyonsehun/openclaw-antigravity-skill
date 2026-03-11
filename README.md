@@ -45,6 +45,100 @@
 
 ---
 
+## 🧠 memory-lancedb-pro 插件使用指南
+
+这是一个替代 OpenClaw 内置记忆插件的增强版，核心升级是**混合检索（向量 + BM25）+ Cross-encoder 重排序**，让 Agent 的长期记忆更准确、更相关。
+
+### 需要什么
+
+| 依赖 | 说明 |
+|---|---|
+| OpenClaw | 已安装并能正常启动 Gateway |
+| Node.js | 用于安装插件依赖 |
+| Git | 用于 clone 插件仓库 |
+| Jina API Key | 免费注册即可，用于 embedding 和重排序（也可替换为其他 OpenAI-compatible embedding 服务） |
+
+### 三步完成安装
+
+**第一步：clone 插件**
+
+```bash
+# macOS / Linux
+git clone https://github.com/win4r/memory-lancedb-pro ~/.openclaw/plugins/memory-lancedb-pro
+cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
+
+# Windows（PowerShell）
+git clone https://github.com/win4r/memory-lancedb-pro $env:USERPROFILE\.openclaw\plugins\memory-lancedb-pro
+cd $env:USERPROFILE\.openclaw\plugins\memory-lancedb-pro && npm install
+```
+
+**第二步：在 `openclaw.json` 里注册插件**
+
+```json
+"plugins": {
+  "allow": ["memory-lancedb-pro"],
+  "load": {
+    "paths": ["~/.openclaw/plugins/memory-lancedb-pro"]
+  },
+  "slots": { "memory": "memory-lancedb-pro" },
+  "entries": {
+    "memory-lancedb-pro": {
+      "enabled": true,
+      "config": {
+        "embedding": {
+          "apiKey": "${JINA_API_KEY}",
+          "model": "jina-embeddings-v5-text-small",
+          "baseURL": "https://api.jina.ai/v1",
+          "dimensions": 1024,
+          "taskQuery": "retrieval.query",
+          "taskPassage": "retrieval.passage",
+          "normalized": true
+        },
+        "retrieval": {
+          "mode": "hybrid",
+          "rerank": "cross-encoder",
+          "rerankProvider": "jina",
+          "rerankApiKey": "${JINA_API_KEY}",
+          "rerankModel": "jina-reranker-v3"
+        },
+        "dbPath": "~/.openclaw/memory/lancedb-pro",
+        "autoCapture": true,
+        "autoRecall": true
+      }
+    }
+  }
+}
+```
+
+**第三步：重启 Gateway 验证**
+
+```bash
+openclaw gateway restart
+openclaw plugins info memory-lancedb-pro   # 看到 status: loaded 即成功
+```
+
+### 插件提供的工具
+
+Agent 安装后可直接调用以下工具：
+
+| 工具 | 用途 |
+|---|---|
+| `memory_store` | 存储一条记忆 |
+| `memory_recall` | 根据语义检索相关记忆 |
+| `memory_update` | 更新已有记忆 |
+| `memory_forget` | 删除指定记忆 |
+| `self_improvement_log` | 记录自我改进日志 |
+
+### 让 Agent 自动完成安装
+
+不想手动操作？把这个 skill 丢给你的 Agent，让他照着做即可：
+
+> 请阅读 skill 中的 `references/memory-lancedb-pro.md`，按照「安装方式」和「当前实际配置」章节，在本机完成 memory-lancedb-pro 插件的安装、配置和验证，完成后告诉我 `openclaw plugins info memory-lancedb-pro` 的输出结果。
+
+Agent 会自动 clone 仓库、安装依赖、写入配置、重启 Gateway 并验证结果。
+
+---
+
 ## 📝 开发者与社区
 
 ### 版本演进 (Changelog)
