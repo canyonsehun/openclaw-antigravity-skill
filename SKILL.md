@@ -20,6 +20,7 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
 | `references/multi_agent.md` | Multi-agent routing, bindings, per-agent config |
 | `references/providers.md` | Model provider setup (Anthropic, OpenAI, Ollama, 20+ providers) |
 | `references/security.md` | Auth, access control, hardening baseline, secrets, incident response |
+| `references/memory-lancedb-pro.md` | memory-lancedb-pro 插件：GitHub 地址、安装方式、完整配置项、可用工具、每日自动更新 cron 任务、诊断方法 |
 
 ## Workflow decision
 
