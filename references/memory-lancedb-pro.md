@@ -34,7 +34,9 @@ cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 "plugins": {
   "allow": ["memory-lancedb-pro", "telegram"],
   "load": {
-    "paths": ["/Users/shmily/.openclaw/plugins/memory-lancedb-pro"]
+    // macOS / Linux: "~/.openclaw/plugins/memory-lancedb-pro"
+    // Windows:       "%USERPROFILE%\\.openclaw\\plugins\\memory-lancedb-pro"
+    "paths": ["~/.openclaw/plugins/memory-lancedb-pro"]
   },
   "slots": { "memory": "memory-lancedb-pro" },
   "entries": {
