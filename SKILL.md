@@ -1,11 +1,11 @@
 ---
 name: openclaw
-description: Configure and operate OpenClaw — a self-hosted, multi-channel AI agent gateway. Use when installing OpenClaw, managing Gateway operations, setting up channels (WhatsApp, Telegram, Discord, Slack, iMessage, Signal, and 15+ others), creating or updating Telegram bot agents, configuring model providers (including antigravity relay), multi-agent routing, security hardening, binding account-to-agent routing, validating antigravity scheduling/account behavior, and troubleshooting model/channel issues (including warmup, image models, 403/429).
+description: Configure and operate OpenClaw — a self-hosted, multi-channel AI agent gateway. Use when installing OpenClaw, managing Gateway operations, setting up channels (WhatsApp, Telegram, Discord, Slack, iMessage, Signal, and 15+ others), creating or updating Telegram bot agents, configuring model providers (including relay), multi-agent routing, security hardening, binding account-to-agent routing, validating relay scheduling/account behavior, and troubleshooting model/channel issues (including warmup, image models, 403/429).
 ---
 
 # OpenClaw
 
-Use this skill to build and maintain a stable multi-bot OpenClaw setup, especially when users need antigravity relay models and predictable `/model` behavior.
+Use this skill to build and maintain a stable multi-bot OpenClaw setup, especially when users need relay models and predictable `/model` behavior.
 
 ## Read references only when needed
 
@@ -13,8 +13,8 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
 |---|---|
 | `references/official.md` | Checking official OpenClaw setup/CLI behavior or release notes |
 | `references/bot-onboarding.md` | Creating or modifying Telegram bots |
-| `references/antigravity-models.md` | Changing antigravity relay models and `/model` visibility |
-| `references/antigravity-tools.md` | Antigravity Tools behavior (account rotation, scheduling mode, LAN exposure, auth, warmup, image model support, 403/429 analysis) |
+| `references/relay-models.md` | Changing relay models and `/model` visibility |
+| `references/relay-tools.md` | Relay Tools behavior (account rotation, scheduling mode, LAN exposure, auth, warmup, image model support, 403/429 analysis) |
 | `references/channels.md` | Per-channel setup: WhatsApp, Telegram, Discord, Slack, Signal, iMessage, plugins |
 | `references/gateway_ops.md` | Gateway architecture, service management, remote access, install/update |
 | `references/multi_agent.md` | Multi-agent routing, bindings, per-agent config |
@@ -26,8 +26,8 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
 1. Perform install/bootstrap work when OpenClaw is missing or broken.
 2. Perform release-check/update work when user asks for latest version, changelog, or auto-upgrade.
 3. Perform bot onboarding when user provides bot name/username/token/default model.
-4. Perform antigravity model sync when user asks to add/remove `/model antigravity` options.
-5. Perform antigravity capability checks when user asks whether image models, auto account/model behavior, or LAN proxy mode work.
+4. Perform relay model sync when user asks to add/remove `/model relay` options.
+5. Perform relay capability checks when user asks whether image models, auto account/model behavior, or LAN proxy mode work.
 6. Perform verification/troubleshooting when user reports wrong model, no reply, 403/429, or routing confusion.
 7. Perform execution-integrity checks when user reports "说了已完成但没做" or multi-step runs stop halfway.
 
@@ -41,6 +41,89 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
    - `openclaw gateway status`
    - `openclaw channels status`
    - `openclaw agents list --json`
+
+## GitHub Codespaces / github.dev remote deployment notes
+
+Use this when the user follows the “no Mac/Linux, phone drives cloud dev” workflow.
+
+1. Local access prerequisite for a Codespace:
+   - `gh auth refresh -h github.com -s codespace`
+   - `gh codespace view -c <name>`
+   - `gh codespace ssh -c <name>`
+2. Fresh remote bootstrap:
+   - prefer `openclaw onboard --non-interactive --accept-risk ...`
+   - `openclaw setup --non-interactive` is not sufficient on some fresh installs because onboarding now requires explicit risk acknowledgement
+3. In ephemeral remote shells, prefer env-file driven startup:
+   - write secrets to `~/.secrets/openclaw.env`
+   - source it from `~/.bashrc`, `~/.zshrc`, and `~/.zprofile`
+   - set `env.shellEnv.enabled = true` in `~/.openclaw/openclaw.json`
+   - start gateway with:
+
+```bash
+nohup bash -lc '[ -f ~/.secrets/openclaw.env ] && source ~/.secrets/openclaw.env; exec openclaw gateway --port 18789' \
+  > ~/.openclaw/logs/gateway.stdout.log \
+  2> ~/.openclaw/logs/gateway.stderr.log < /dev/null &
+```
+
+4. For remote/Codespaces deployments, validate the upstream model endpoint from that host before blaming OpenClaw:
+   - `curl -I <baseUrl>/responses`
+   - or the provider-specific health endpoint actually used by the selected API mode
+5. Important diagnostic pattern:
+   - `openclaw gateway status` can be healthy
+   - `memory-lancedb-pro` can register successfully
+   - Jina embedding probe can return HTTP 200
+   - but agent inference can still fail if the model upstream blocks the Codespaces egress IP
+6. Cloudflare / WAF failure signature to recognize immediately:
+   - `HTTP 403`
+   - header like `cf-mitigated: challenge`
+   - HTML body containing “Just a moment...” or a managed challenge page
+   - This means the issue is upstream network policy, not OpenClaw routing/plugin startup
+7. When channels are not configured yet, use a channel-free smoke test:
+   - `openclaw agent --local --agent main --message "reply only: ok" --json`
+   - if using gateway mode instead of `--local`, pass `--agent`, `--session-id`, or `--to`; otherwise the call fails before inference
+8. Safety rule for cloud rehearsals:
+   - do not attach the same Telegram / WhatsApp production credentials to both local and cloud gateways unless the migration is intentional
+   - otherwise the two gateways can compete for the same bot/session and create confusing false negatives
+
+## Claude Code fallback on remote hosts / Codespaces
+
+Use this when remote OpenClaw is healthy but the configured coding provider still fails, and the user wants to reuse local Claude Code on the remote machine.
+
+1. Important separation:
+   - remote `Claude Code` working does **not** mean OpenClaw has already been switched to use Anthropic / Claude models
+   - it only proves the remote host can successfully run `claude` with its own endpoint/auth
+2. Practical diagnosis from real-world runs:
+   - `codex` / custom OpenAI-compatible upstream can fail with Cloudflare `403` from a Codespaces egress IP
+   - at the same time, `Claude Code` can still succeed against a separate Anthropic-compatible endpoint
+   - therefore do not conclude “remote machine/network is broken” just because one provider is blocked
+3. Local Claude Code auth shape to inspect first:
+   - binary/version: `claude --version`
+   - settings file: `~/.claude/settings.json`
+   - common keys observed in the field:
+     - `env.ANTHROPIC_BASE_URL`
+     - `env.ANTHROPIC_AUTH_TOKEN`
+     - `model`
+4. Remote sync workflow that worked reliably:
+   - install the same Claude Code version on the remote host
+   - write the remote `~/.claude/settings.json` as valid JSON
+   - also mirror the same auth vars into `~/.secrets/openclaw.env` so shell-launched tools can read them
+   - source `~/.secrets/openclaw.env` from shell startup files as part of the normal remote bootstrap
+5. Critical pitfall:
+   - if `~/.claude/settings.json` is malformed JSON, Claude Code fails before any network test
+   - fix the JSON first before debugging auth/base URL
+6. Minimal remote smoke test:
+
+```bash
+claude -p --output-format json 'reply only: ok'
+```
+
+Pass criteria:
+   - `"is_error": false`
+   - `"result": "ok"`
+   - `modelUsage` is populated
+7. Operator takeaway:
+   - if remote Claude Code smoke test passes while remote OpenClaw `codex` still fails, the next action is provider switching/reconfiguration, not gateway repair
+   - if the user wants OpenClaw to actually use Claude on that remote machine, update OpenClaw model/provider config explicitly after the Claude Code smoke test succeeds
 
 ## Release check and auto-update workflow (v2026.2.19+)
 
@@ -74,11 +157,11 @@ Collect all fields before writing config:
 - `display_name`
 - `telegram_username` (e.g. `@canyonMain_bot`)
 - `bot_token`
-- `default_model` (full provider/model, e.g. `antigravity/gemini-3-pro-low`)
+- `default_model` (full provider/model, e.g. `relay/gemini-3-pro-low`)
 - `agent_id` (optional; derive from name if omitted)
 - `is_main_agent` (`yes` or `no`)
 
-If user also wants `/model antigravity` choices configured, collect model IDs list too.
+If user also wants `/model relay` choices configured, collect model IDs list too.
 
 ## Add one bot and bind one agent
 
@@ -156,19 +239,19 @@ openclaw agents list --json
 3. Ensure Telegram binding for `main` points to the intended account.
 4. Restart gateway and run smoke test.
 
-## Configure antigravity relay and `/model` choices
+## Configure relay and `/model` choices
 
-1. Keep antigravity provider in both places:
-   - `~/.openclaw/openclaw.json` at `models.providers.antigravity`
-   - `~/.openclaw/agents/<agent_id>/agent/models.json` at `providers.antigravity`
+1. Keep relay provider in both places:
+   - `~/.openclaw/openclaw.json` at `models.providers.relay`
+   - `~/.openclaw/agents/<agent_id>/agent/models.json` at `providers.relay`
 2. Use OpenAI-compatible relay settings:
    - `baseUrl`: usually `http://127.0.0.1:8045/v1`
    - `api`: `openai-completions`
    - `apiKey`: relay key from user
-3. Maintain model IDs under `antigravity.models` and sync all target files with `scripts/sync_antigravity_models.py`.
+3. Maintain model IDs under `relay.models` and sync all target files with `scripts/sync_relay_models.py`.
 4. When user asks "can this model be selected in /model":
    - verify it exists in relay `/v1/models`
-   - verify it exists in OpenClaw antigravity provider catalog
+   - verify it exists in OpenClaw relay provider catalog
 5. Control `/model` visibility with `agents.defaults.models`:
    - `{}` means do not restrict to a fixed allowlist.
    - non-empty map means only listed keys are selectable.
@@ -256,7 +339,7 @@ Use this when user says they finished Google verification and asks to re-test on
   - 429/503 capacity exhaustion: relay/upstream availability issue.
   - 403 validation required: upstream account verification issue.
   - warmup calls in monitor logs: internal relay warmup traffic, not user prompt traffic.
-- If error signature matches Antigravity community-known Google-side issues (HTTP 400 precondition check, 403 ToS/validation, invalid project resource name), load `references/antigravity-tools.md` community section and clearly label the guidance as non-official/community-sourced.
+- If error signature matches Relay community-known Google-side issues (HTTP 400 precondition check, 403 ToS/validation, invalid project resource name), load `references/relay-tools.md` community section and clearly label the guidance as non-official/community-sourced.
 - Prefer disable over delete for channel accounts unless user explicitly asks delete.
 - Never delete workspace or agent dirs unless user explicitly asks.
 

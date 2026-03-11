@@ -1,8 +1,8 @@
-# Antigravity relay model rules
+# Relay model rules
 
 ## Provider shape
 
-Use provider key `antigravity` with OpenAI-compatible API mode:
+Use provider key `relay` with OpenAI-compatible API mode:
 
 - `baseUrl`: relay endpoint (common local relay: `http://127.0.0.1:8045/v1`)
 - `apiKey`: relay key
@@ -33,24 +33,6 @@ Removed from current set:
 
 - `agents.defaults.models = {}`: do not restrict to fixed allowlist keys.
 - Non-empty `agents.defaults.models`: restrict selectable models to listed keys.
-- White-list is an **object map** keyed by full `provider/model` (not a provider list). Example:
-
-  ```json
-  {
-    "agents": {
-      "defaults": {
-        "models": {
-          "codex/gpt-5.3-codex": {},
-          "openai/gpt-5.2": { "alias": "gpt" },
-          "anthropic/claude-opus-4-6": { "alias": "opus", "params": { "maxTokens": 8192 } },
-          "antigravity/gemini-3.1-pro-high": {}
-        }
-      }
-    }
-  }
-  ```
-
-- There is **no** `modelDenyProviders` key; adding it will break config validation.
 
 ## Sync target files
 

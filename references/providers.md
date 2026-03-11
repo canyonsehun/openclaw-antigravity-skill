@@ -44,15 +44,15 @@ openclaw models set anthropic/claude-sonnet-4-5
 | Ollama | `ollama/*` — local models |
 | vLLM | `vllm/*` — local models |
 
-### Antigravity Relay (custom)
+### Relay Relay (custom)
 
-OpenAI-compatible relay at `http://127.0.0.1:8045/v1`. See `references/antigravity-models.md` for full setup.
+OpenAI-compatible relay at `http://127.0.0.1:8045/v1`. See `references/relay-models.md` for full setup.
 
 ```json5
 {
   models: {
     providers: {
-      antigravity: {
+      relay: {
         api: "openai-completions",
         baseUrl: "http://127.0.0.1:8045/v1",
         apiKey: "<relay-key>",

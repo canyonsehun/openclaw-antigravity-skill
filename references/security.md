@@ -146,7 +146,7 @@ Session isolation for multi-user DMs:
   tools: {
     profile: "coding",
     byProvider: {
-      "google-antigravity": { profile: "minimal" },
+      "google-relay": { profile: "minimal" },
     },
   },
 }

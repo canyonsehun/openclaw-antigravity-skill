@@ -1,17 +1,17 @@
-# Antigravity Tools integration reference (for OpenClaw)
+# Relay Tools integration reference (for OpenClaw)
 
-Use this reference when OpenClaw bots rely on Antigravity Tools as a reverse proxy.
+Use this reference when OpenClaw bots rely on Relay Tools as a reverse proxy.
 
 ## Official sources
 
-- Main docs: https://opencodedocs.com/lbjlaq/Antigravity-Manager/
-- Proxy setup and first client: https://opencodedocs.com/zh/lbjlaq/Antigravity-Manager/start/proxy-and-first-client/
-- Config deep dive: https://opencodedocs.com/lbjlaq/Antigravity-Manager/advanced/config/
-- Security: https://opencodedocs.com/zh/lbjlaq/Antigravity-Manager/advanced/security/
-- 429 rotation FAQ: https://opencodedocs.com/zh/lbjlaq/Antigravity-Manager/faq/429-rotation/
-- Endpoints appendix: https://opencodedocs.com/lbjlaq/Antigravity-Manager/appendix/endpoints/
-- Image support (Imagen mapping): https://opencodedocs.com/lbjlaq/Antigravity-Manager/platforms/imagen/
-- GitHub repo: https://github.com/lbjlaq/Antigravity-Manager
+- Main docs: https://opencodedocs.com/lbjlaq/Relay-Manager/
+- Proxy setup and first client: https://opencodedocs.com/zh/lbjlaq/Relay-Manager/start/proxy-and-first-client/
+- Config deep dive: https://opencodedocs.com/lbjlaq/Relay-Manager/advanced/config/
+- Security: https://opencodedocs.com/zh/lbjlaq/Relay-Manager/advanced/security/
+- 429 rotation FAQ: https://opencodedocs.com/zh/lbjlaq/Relay-Manager/faq/429-rotation/
+- Endpoints appendix: https://opencodedocs.com/lbjlaq/Relay-Manager/appendix/endpoints/
+- Image support (Imagen mapping): https://opencodedocs.com/lbjlaq/Relay-Manager/platforms/imagen/
+- GitHub repo: https://github.com/lbjlaq/Relay-Manager
 
 ## Scheduling and account behavior
 
@@ -29,7 +29,7 @@ Use this reference when OpenClaw bots rely on Antigravity Tools as a reverse pro
 
 ## Image model support and limits
 
-- Antigravity supports image generation flows.
+- Relay supports image generation flows.
 - Two common ways:
   1. `POST /v1/images/generations` with `model: gemini-3-pro-image`
   2. `POST /v1/chat/completions` with image-capable model and optional `size`
@@ -51,7 +51,7 @@ Use this reference when OpenClaw bots rely on Antigravity Tools as a reverse pro
 ## OpenClaw integration checklist
 
 1. Relay responds on `/v1/models` and includes required model IDs.
-2. `~/.openclaw/openclaw.json` and each agent `models.json` contain same `antigravity` provider model catalog.
+2. `~/.openclaw/openclaw.json` and each agent `models.json` contain same `relay` provider model catalog.
 3. Telegram account -> binding -> agent mapping is explicit and unique.
 4. Gateway restart done after config update.
 5. Smoke test each bot and confirm provider/model in runtime metadata.

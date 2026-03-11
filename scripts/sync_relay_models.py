@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Synchronize antigravity provider models across OpenClaw config files.
+"""Synchronize relay provider models across OpenClaw config files.
 
 Usage:
-  python3 sync_antigravity_models.py \
+  python3 sync_relay_models.py \
     --openclaw-json ~/.openclaw/openclaw.json \
     --api-key <key> \
     --base-url http://127.0.0.1:8045/v1
@@ -53,7 +53,7 @@ def model_entry(model_id: str) -> Dict:
 
 
 def upsert_provider_block(providers: Dict, base_url: str, api_key: str, models: List[str]) -> None:
-    providers["antigravity"] = {
+    providers["relay"] = {
         "baseUrl": base_url,
         "apiKey": api_key,
         "api": "openai-completions",
@@ -64,9 +64,9 @@ def upsert_provider_block(providers: Dict, base_url: str, api_key: str, models: 
 def update_openclaw_json(path: Path, base_url: str, api_key: str, models: List[str], dry_run: bool) -> bool:
     data = json.loads(path.read_text())
     providers = data.setdefault("models", {}).setdefault("providers", {})
-    before = json.dumps(providers.get("antigravity", {}), sort_keys=True)
+    before = json.dumps(providers.get("relay", {}), sort_keys=True)
     upsert_provider_block(providers, base_url, api_key, models)
-    after = json.dumps(providers.get("antigravity", {}), sort_keys=True)
+    after = json.dumps(providers.get("relay", {}), sort_keys=True)
     changed = before != after
     if changed and not dry_run:
         path.write_text(json.dumps(data, ensure_ascii=True, indent=2) + "\n")
@@ -76,9 +76,9 @@ def update_openclaw_json(path: Path, base_url: str, api_key: str, models: List[s
 def update_agent_models(path: Path, base_url: str, api_key: str, models: List[str], dry_run: bool) -> bool:
     data = json.loads(path.read_text())
     providers = data.setdefault("providers", {})
-    before = json.dumps(providers.get("antigravity", {}), sort_keys=True)
+    before = json.dumps(providers.get("relay", {}), sort_keys=True)
     upsert_provider_block(providers, base_url, api_key, models)
-    after = json.dumps(providers.get("antigravity", {}), sort_keys=True)
+    after = json.dumps(providers.get("relay", {}), sort_keys=True)
     changed = before != after
     if changed and not dry_run:
         path.write_text(json.dumps(data, ensure_ascii=True, indent=2) + "\n")
@@ -86,7 +86,7 @@ def update_agent_models(path: Path, base_url: str, api_key: str, models: List[st
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Sync antigravity model provider across OpenClaw config files")
+    p = argparse.ArgumentParser(description="Sync relay model provider across OpenClaw config files")
     p.add_argument("--openclaw-json", required=True)
     p.add_argument("--api-key", required=True)
     p.add_argument("--base-url", default="http://127.0.0.1:8045/v1")

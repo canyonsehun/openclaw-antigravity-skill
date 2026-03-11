@@ -84,7 +84,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--name", required=True, help="Display name")
     parser.add_argument("--username", required=True, help="Telegram username, e.g. @canyonMain_bot")
     parser.add_argument("--token", required=True, help="Telegram Bot API token")
-    parser.add_argument("--model", required=True, help="Default model, e.g. antigravity/gemini-3-pro-low")
+    parser.add_argument("--model", required=True, help="Default model, e.g. codex/gpt-5.3-codex")
     parser.add_argument("--main", action="store_true", help="Use/update main agent")
     parser.add_argument("--agent-id", help="Override agent id")
     parser.add_argument("--account-id", help="Override telegram account id")
