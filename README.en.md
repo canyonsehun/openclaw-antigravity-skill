@@ -56,6 +56,7 @@ The official OpenClaw docs are useful, but often generic. This repository is the
 | `references/channels.md` | Telegram / WhatsApp / Slack and channel setup |
 | `references/multi_agent.md` | multi-agent routing and binding notes |
 | `references/memory-lancedb-pro.md` | memory plugin setup, tools, cron update flow, and diagnostics |
+| `references/experience-distill-bot.md` | experience distill / skill distill bot workflow for turning stable `main` chat conclusions into skill/reference drafts |
 | `scripts/provision_telegram_bot.py` | Telegram bot provisioning helper |
 | `scripts/sync_relay_models.py` | relay model catalog sync helper |
 
