@@ -1,10 +1,9 @@
 # memory-lancedb-pro 插件
 
 **GitHub**: https://github.com/CortexReach/memory-lancedb-pro
-**历史仓库**: https://github.com/win4r/memory-lancedb-pro
+**历史公开路径**: https://github.com/win4r/memory-lancedb-pro
 **当前 GitHub 作者 / 维护者**: `CortexReach`
-**本地路径**: `~/.openclaw/plugins/memory-lancedb-pro`
-**当前版本**: 1.1.0-beta.6（通过每日定时任务自动跟踪更新）
+**推荐本地路径**: `~/.openclaw/plugins/memory-lancedb-pro`
 
 ## 简介
 
@@ -30,14 +29,12 @@ git clone https://github.com/CortexReach/memory-lancedb-pro ~/.openclaw/plugins/
 cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 ```
 
-## 当前实际配置（openclaw.json）
+## 参考配置模板（openclaw.json）
 
 ```json
 "plugins": {
   "allow": ["memory-lancedb-pro", "telegram"],
   "load": {
-    // macOS / Linux: "~/.openclaw/plugins/memory-lancedb-pro"
-    // Windows:       "%USERPROFILE%\\.openclaw\\plugins\\memory-lancedb-pro"
     "paths": ["~/.openclaw/plugins/memory-lancedb-pro"]
   },
   "slots": { "memory": "memory-lancedb-pro" },
@@ -89,11 +86,11 @@ cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 }
 ```
 
-## 关键配置项说明
+## 关键配置项说明（推荐值示例）
 
 ### Embedding（必填）
 
-| 字段 | 说明 | 当前值 |
+| 字段 | 说明 | 推荐值示例 |
 |---|---|---|
 | `apiKey` | Jina / OpenAI 兼容 API Key，支持数组轮转 | `${JINA_API_KEY}` |
 | `model` | Embedding 模型名 | `jina-embeddings-v5-text-small` |
@@ -103,7 +100,7 @@ cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 
 ### Retrieval（检索）
 
-| 字段 | 说明 | 当前值 |
+| 字段 | 说明 | 推荐值示例 |
 |---|---|---|
 | `mode` | `hybrid`（向量+BM25）或 `vector` | `hybrid` |
 | `vectorWeight` / `bm25Weight` | 融合权重，相加应为 1 | 0.7 / 0.3 |
@@ -115,7 +112,7 @@ cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 
 ### 其他重要开关
 
-| 字段 | 说明 | 当前值 |
+| 字段 | 说明 | 推荐值示例 |
 |---|---|---|
 | `autoCapture` | 自动捕获对话中的重要信息 | `true` |
 | `autoRecall` | 每轮自动注入相关记忆 | `true` |
@@ -132,19 +129,22 @@ cd ~/.openclaw/plugins/memory-lancedb-pro && npm install
 
 CLI 命令：`openclaw memory-pro`
 
-## 每日自动更新任务
+## 推荐的每日更新任务模式
 
-Cron job ID: `e8efabef-246c-4db4-a9b5-3542dfcdcc76`，每天 10:00（Asia/Shanghai）在 `indetermination` agent 执行：
+如果当前环境需要自动跟踪插件更新，推荐的 cron 流程是：
 
 - `git fetch` 检查远端是否有新提交
 - 有更新时：`git restore .` → `git pull --ff-only` → `npm install` → `openclaw gateway restart`
-- 检查 `铁律-密码在视频里.zip` 是否变更，若有则自动解压并同步到所有 `AGENTS.md`
-- 结果发送到 Telegram 群
+- 若你的环境额外依赖某个 zip / 规则包文件，应把它视为**可选增强项**，不要在前置检查阶段把“文件缺失”直接判成硬失败
+- 结果可以投递到群、Webhook 或仅内部记录，具体取决于当前环境策略
 
-手动触发：
+手动触发可统一通过当前环境里的 cron job id 执行，例如：
+
 ```bash
-openclaw cron run --id e8efabef-246c-4db4-a9b5-3542dfcdcc76
+openclaw cron run --id <job_id>
 ```
+
+当前环境如果真的启用了自动更新任务，请以 `openclaw cron list --json` 的实时结果为准，不要把某个 job id / 时间 / 投递目标写死到产品说明里。
 
 ## 诊断
 
@@ -159,4 +159,4 @@ openclaw plugins doctor                    # 插件健康检查
 
 - **不要直接改插件源码**来实现业务功能（如 Telegram reaction），升级时会被覆盖。
 - Telegram ack（👀）问题属于 channel 层，不是 LanceDB 问题，通过 `channels.telegram.reactionLevel` 配置解决。
-- `铁律-密码在视频里.zip` 密码：`188188`（解压铁律内容用）。
+- 若当前环境还有额外规则包、zip 包、铁律包等配套文件，请单独写到环境运维说明，不要混进插件通用能力说明。

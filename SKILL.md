@@ -21,18 +21,20 @@ Use this skill to build and maintain a stable multi-bot OpenClaw setup, especial
 | `references/providers.md` | Model provider setup (Anthropic, OpenAI, Ollama, 20+ providers) |
 | `references/security.md` | Auth, access control, hardening baseline, secrets, incident response |
 | `references/memory-lancedb-pro.md` | memory-lancedb-pro 插件：GitHub 地址、安装方式、完整配置项、可用工具、每日自动更新 cron 任务、诊断方法 |
+| `references/experience-distill-bot.md` | 经验提炼 bot / skill distill bot 模式：如何把主对话里的稳定经验沉淀为 skill 草稿或更新提案 |
 
 ## Workflow decision
 
 1. Perform install/bootstrap work when OpenClaw is missing or broken.
 2. Perform release-check/update work when user asks for latest version, changelog, or auto-upgrade.
 3. Perform bot onboarding when user provides bot name/username/token/default model.
-4. Perform relay model sync when user asks to add/remove `/model relay` options.
-5. Perform relay capability checks when user asks whether image models, auto account/model behavior, or LAN proxy mode work.
-6. Perform verification/troubleshooting when user reports wrong model, no reply, 403/429, or routing confusion.
-7. Perform execution-integrity checks when user reports "说了已完成但没做" or multi-step runs stop halfway.
+4. Perform experience-distill bot design when user wants to turn recurring chat knowledge into a dedicated summary / distill / skill-maintenance bot workflow.
+5. Perform relay model sync when user asks to add/remove `/model relay` options.
+6. Perform relay capability checks when user asks whether image models, auto account/model behavior, or LAN proxy mode work.
+7. Perform verification/troubleshooting when user reports wrong model, no reply, 403/429, or routing confusion.
+8. Perform execution-integrity checks when user reports "说了已完成但没做" or multi-step runs stop halfway.
 
-## Install and bootstrap (OpenClaw v2026.2.19+ style)
+## Install and bootstrap
 
 1. Install Node.js 22+.
 2. Install CLI: `npm i -g openclaw`.
@@ -126,7 +128,7 @@ Pass criteria:
    - if remote Claude Code smoke test passes while remote OpenClaw `codex` still fails, the next action is provider switching/reconfiguration, not gateway repair
    - if the user wants OpenClaw to actually use Claude on that remote machine, update OpenClaw model/provider config explicitly after the Claude Code smoke test succeeds
 
-## Release check and auto-update workflow (v2026.2.19+)
+## Release check and auto-update workflow
 
 Run this flow when the user asks for "latest version", "what changed", or requests automatic upgrades.
 
@@ -190,8 +192,8 @@ openclaw channels add \\
 ```bash
 openclaw agents add "<display_name>" \\
   --non-interactive \\
-  --workspace /Users/<user>/.openclaw/workspace-<agent_id> \\
-  --agent-dir /Users/<user>/.openclaw/agents/<agent_id>/agent \\
+  --workspace "$HOME/.openclaw/workspace-<agent_id>" \\
+  --agent-dir "$HOME/.openclaw/agents/<agent_id>/agent" \\
   --model <default_model> \\
   --json
 ```
@@ -199,9 +201,9 @@ openclaw agents add "<display_name>" \\
 3. Ensure provider catalog exists for the new agent:
 
 ```bash
-mkdir -p /Users/<user>/.openclaw/agents/<agent_id>/agent
-cp /Users/<user>/.openclaw/agents/main/agent/models.json \\
-  /Users/<user>/.openclaw/agents/<agent_id>/agent/models.json
+mkdir -p "$HOME/.openclaw/agents/<agent_id>/agent"
+cp "$HOME/.openclaw/agents/main/agent/models.json" \\
+  "$HOME/.openclaw/agents/<agent_id>/agent/models.json"
 ```
 
 4. Ensure explicit binding in `~/.openclaw/openclaw.json`:
@@ -227,6 +229,31 @@ openclaw gateway restart
 openclaw channels status
 openclaw agents list --json
 ```
+
+## Experience distill bot / skill distill bot
+
+Use this pattern when the user wants a dedicated bot that takes stable conclusions from `main` conversations and turns them into reusable skill/reference update proposals.
+
+1. Treat this as a **workflow design**, not an OpenClaw built-in toggle.
+2. Reuse standard bot onboarding for the dedicated bot/account.
+3. Give the distill bot:
+   - a dedicated `agent_id`
+   - a dedicated workspace
+   - a narrow private skill focused on summarizing stable experience
+4. Require explicit input:
+   - conversation summary
+   - final conclusion
+   - desired output target (`SKILL.md` or a `references/*.md`)
+5. Output should be structured as:
+   - whether to distill
+   - target file
+   - title
+   - final draft text
+   - verification steps
+   - uncertainty list
+6. Do **not** present this as “auto-generates production skill content from any chat” — it must stay reviewable and operator-controlled.
+
+Reference: `references/experience-distill-bot.md`
 
 ## Make a bot the main agent
 
